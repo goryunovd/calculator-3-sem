@@ -43,9 +43,13 @@ int finding_corners(string str,char arithm,int leftcorner,int rightcorner)
 		
 
 };*/
+void arithmetics(string str)
+{
+
+};
 void calculation(string str)
 {
-	string tmp_str;
+	string tmp_str,tmp2_str;
 	int  left_point, right_point,i,j,pos_ar;//pos_ar- position of artihmetic left/right_point is for borders of double
 	double tmp_d1, tmp_d2;
 	cout << str << endl;
@@ -100,7 +104,7 @@ void calculation(string str)
 		if (tmp_d1 < 0) tmp_d2 = -1;
 		if (tmp_d1 == 0) tmp_d2 = 0;
 		tmp_str = to_string(tmp_d2);
-		str.replace(i, j - i+1,"("+ tmp_str+")");
+		str.replace(i, j - i+1, tmp_str);
 		cout << str << endl;
 	}
 	while (str.find("log(") != -1)
@@ -118,42 +122,102 @@ void calculation(string str)
 	//we make our calculation little easer lets find the nearest ) form the beginging bagining beginning 
 	//let it be that i is left corner index and j is right corner index
 
-	while (str.find("^")!=-1|| str.find("*") != -1|| str.find("+") != -1|| str.find("-") != -1|| str.find("/") != -1)
+ 	while (str.find("^")!=-1|| str.find("*") != -1|| str.find("+") != -1|| str.find("-") != -1|| str.find("/") != -1)
 	{
 		j = str.find(")");
 		i = str.rfind("(", j);
+		tmp_str.assign(str,i+1,j-i-1);
 		//if (str.find("*", j, i)!=-1&& str.find("/", j, i)==-1)
 		if (i != -1 && j != -1)
 		{
-			while (str.find("*", i, j) != -1 || str.find("+", i, j) != -1 || str.find("-", i, j) != -1 || str.find("/", i, j) != -1)
+			while ((tmp_str.find("*") != -1) || (tmp_str.find("+") != -1) || (tmp_str.find("-") != -1) || (tmp_str.find("/") != -1))
 				//in brackets 
 			{
-				pos_ar = str.find("*", j, i);
+				pos_ar = tmp_str.find("*");//pos_ar- position of artihmetic left/right_point is for borders of double
 				if (pos_ar != -1)
-				{//should find in brackets two doubles left and right to *
-					for (left_point = pos_ar; left_point > i; left_point--) {
-						if (str[left_point] == '+' || str[left_point] == '-' || str[left_point] == '/') { left_point++; break; }
+				{//should find in brackets two doubles left and right to multiplate
+					for (left_point = pos_ar - 1; left_point > 0; left_point--) {
+						if (tmp_str[left_point] == '+' || tmp_str[left_point] == '-' || tmp_str[left_point] == '/') { left_point++; break; }
 					}
-					tmp_str.assign(str, left_point, pos_ar);
-					tmp_d1 = std::stod(tmp_str);
-					for (right_point = pos_ar; right_point > i; right_point--) {
-						if (str[right_point] == '+' || str[right_point] == '-' || str[right_point] == '/') { right_point++; break; }
+					tmp2_str.assign(tmp_str, left_point, pos_ar - left_point);
+					tmp_d1 = std::stod(tmp2_str);
+					for (right_point = pos_ar + 1; right_point < tmp_str.length(); right_point++) {
+						if (tmp_str[right_point] == '+' || tmp_str[right_point] == '-' || tmp_str[right_point] == '/' || tmp_str[right_point] == '*') { break; }
+					}
+					tmp2_str.assign(tmp_str, pos_ar + 1, right_point - pos_ar - 1);
+					tmp_d2 = std::stod(tmp2_str);
+					tmp_d2 = tmp_d2 * tmp_d1;
+					tmp2_str = to_string(tmp_d2);
+					tmp_str.replace(left_point, right_point - left_point, tmp2_str);
+				}
+				else {
+					pos_ar = tmp_str.find("/");//pos_ar- position of artihmetic left/right_point is for borders of double
+					if (pos_ar != -1)
+					{//should find in brackets two doubles left and right to multiplate
+						for (left_point = pos_ar - 1; left_point > 0; left_point--) {
+							if (tmp_str[left_point] == '+' || tmp_str[left_point] == '-') { left_point++; break; }
+						}
+						tmp2_str.assign(tmp_str, left_point, pos_ar - left_point);
+						tmp_d1 = std::stod(tmp2_str);
+						for (right_point = pos_ar + 1; right_point < tmp_str.length(); right_point++) {
+							if (tmp_str[right_point] == '+' || tmp_str[right_point] == '-' || tmp_str[right_point] == '/' || tmp_str[right_point] == '*') { break; }
+						}
+						tmp2_str.assign(tmp_str, pos_ar + 1, right_point - pos_ar - 1);
+						tmp_d2 = std::stod(tmp2_str);
+						tmp_d2 = tmp_d2 / tmp_d1;
+						tmp2_str = to_string(tmp_d2);
+						tmp_str.replace(left_point, right_point - left_point, tmp2_str);
 					}
 
-					tmp_str.assign(str, pos_ar, right_point);
-					tmp_d2 = std::stod(tmp_str);
-					tmp_d2 = tmp_d2 * tmp_d1;
-					tmp_str = to_string(tmp_d2);
-					str.replace(left_point, right_point -left_point + 1, tmp_str);
+					else {
+						pos_ar = tmp_str.find("-");//pos_ar- position of artihmetic left/right_point is for borders of double
+						if (pos_ar != -1)
+						{//should find in brackets two doubles left and right to multiplate
+							for (left_point = pos_ar - 1; left_point > 0; left_point--) {
+								if (tmp_str[left_point] == '+') { left_point++; break; }
+							}
+							tmp2_str.assign(tmp_str, left_point, pos_ar - left_point);
+							tmp_d1 = std::stod(tmp2_str);
+							for (right_point = pos_ar + 1; right_point < tmp_str.length(); right_point++) {
+								if (tmp_str[right_point] == '+' || tmp_str[right_point] == '-' || tmp_str[right_point] == '/' || tmp_str[right_point] == '*') { break; }
+							}
+							tmp2_str.assign(tmp_str, pos_ar + 1, right_point - pos_ar - 1);
+							tmp_d2 = std::stod(tmp2_str);
+							tmp_d2 = tmp_d2 - tmp_d1;
+							tmp2_str = to_string(tmp_d2);
+							tmp_str.replace(left_point, right_point - left_point, tmp2_str);
+						}
+						else {
+							pos_ar = tmp_str.find("+");//pos_ar- position of artihmetic left/right_point is for borders of double
+							if (pos_ar != -1)
+							{//should find in brackets two doubles left and right to multiplate
+								for (left_point = pos_ar - 1; left_point > 0; left_point--) {
+									if (tmp_str[left_point] == '+' || tmp_str[left_point] == '-') { left_point++; break; }
+								}
+								tmp2_str.assign(tmp_str, left_point, pos_ar - left_point);
+								tmp_d1 = std::stod(tmp2_str);
+								for (right_point = pos_ar + 1; right_point < tmp_str.length(); right_point++) {
+									if (tmp_str[right_point] == '+' || tmp_str[right_point] == '-' || tmp_str[right_point] == '/' || tmp_str[right_point] == '*') { break; }
+								}
+								tmp2_str.assign(tmp_str, pos_ar + 1, right_point - pos_ar - 1);
+								tmp_d2 = std::stod(tmp2_str);
+								tmp_d2 = tmp_d2 + tmp_d1;
+								tmp2_str = to_string(tmp_d2);
+								tmp_str.replace(left_point, right_point - left_point, tmp2_str);
+							}
+						}
+					}
 				}
 			}
+			str.replace(i, j - i + 1, tmp_str);
 		}
+
 	}
 
 }
 int main()
-{
-	string str="((2+1*4)*5)/6+(cos(0.123891298)*2+sin(0))^2+sgn(-5)+log(exp)";
+ {
+	string str="((2.2+1.1*4.4*1.0)*5.5)/6.6+(cos(0.123891298)*2.0+sin(0))^2.0+sgn(-5)+log(exp)+log(1)";
 	bool check_for_bracekts=1;
 	cout << "our txt is :" << str << endl;
 	/*
